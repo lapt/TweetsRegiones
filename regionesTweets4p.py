@@ -84,7 +84,7 @@ def insertTweets(connection, tweet, id_user, id_region):
 
 
 def getIdRegion(nameRegion, connection):
-    query = "SELECT idRegion FROM Twitter.Region where name=%s;"
+    query = "SELECT idRegion FROM Region where name=%s;"
     try:
         cursor = connection.cursor()
         cursor.execute(query, (nameRegion,))
@@ -205,7 +205,7 @@ def get_all_tweets(id_user, region):
 
 
 def getSinceId(connection, idUser):
-    query = "SELECT idTweet FROM Twitter.Tweet where idUser=%s order by idTweet desc limit 1;"
+    query = "SELECT idTweet FROM Tweet where idUser=%s order by idTweet desc limit 1;"
     try:
         cursor = connection.cursor()
         cursor.execute(query, (idUser,))
@@ -221,7 +221,7 @@ def getSinceId(connection, idUser):
 
 
 def countTweets(connection, idUser):
-    query = "select count(*) from Twitter.Tweet where idUser=%s;"
+    query = "select count(*) from Tweet where idUser=%s;"
     try:
         cursor = connection.cursor()
         cursor.execute(query, (idUser,))
@@ -304,7 +304,7 @@ def region():
 
 def getTweets(connection):
 
-    query = "SELECT Tweet.text FROM Twitter.Tweet;"
+    query = "SELECT Tweet.text FROM Tweet;"
     try:
         cursor = connection.cursor()
         cursor.execute(query)
