@@ -36,10 +36,10 @@ BDJSON = "../../twitter-users/"
 users = defaultdict(lambda: {'followers': 0})
 MIN_TWEETS = 3000
 # Twitter API credentials
-consumer_key = "LnTLjqXhZsErKRtJnpIGCtIR5"
-consumer_secret = "EFtLOARYuFWVB6UpWExaCGyhBUi72EV55VUsxmZmSgBt9wEswO"
-access_key = "2559575756-MYtKtUtIKYSzJLsd2GHMQbUL1EsqxcYKbtUAKlR"
-access_secret = "8k6OCK2HqHbdvQiUn0SfowUsRdoNEFhvxBrdXwYmpSKwO"
+consumer_key = "3QkxZ7Hd9zYzCwf80Tg20YaV9"
+consumer_secret = "2x8f4dNYks4DdUDn1VnmeMBjQU77QU96ftWE2ZuQeg5n18clB9"
+access_key = "184784339-kqiDjEkL2fidtFgWjoCvk5MZamOMvXywgAAZ2kAs"
+access_secret = "jpR2JjZhCz0NP5ijX1DmQgaYjYi3pBfRuovx0SOcoj4u6"
 
 
 def getConecctionNeo():
@@ -284,7 +284,7 @@ def main():
 
 
 def prueba():
-    n = getUserByRegion('Biobio')
+    n = getUserByRegion('RM Santiago')
 
     for x in n:
         print x[0]
@@ -293,7 +293,7 @@ def prueba():
 
 
 def region():
-    region = 'Biobio'
+    region = 'Antofagasta'
     ids = getUserByRegion(region)
     print 'Region: %s' % region
     if ids is None:

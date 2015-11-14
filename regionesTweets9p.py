@@ -32,14 +32,14 @@ REGIONES = {'2': 'Antofagasta',
             '13': 'RM Santiago'
             }
 
-BDJSON = "/home/luisangel/twitter-users/"
+BDJSON = "../../twitter-users/"
 users = defaultdict(lambda: {'followers': 0})
 MIN_TWEETS = 3000
 # Twitter API credentials
-consumer_key = "N0FOjQ0nM1aZE5J2x281ceCXC"
-consumer_secret = "39T7HICkYlumTUIziQhP9gQaHATwUmmACeioe3xFN1DmqllFJP"
-access_key = "126471512-sFqNbzR2CkAc1cbO7yb6z6SnnjEPNaP9xRLbATHx"
-access_secret = "FjbQ03CFFLlVQOhyzbn8Lx5Bxw4gCL9EyOghgS5t1zJnE"
+consumer_key = "75Pii7njr9h88M88djkbN27xb"
+consumer_secret = "qFYz34r56ZiAVUjbFVXmJXWQR3edAGKaXYGzMpdqeiEygSxOQr"
+access_key = "2559575756-bUtIAGoSoVpbsqTdxiHaoDg8AI5BnRYKP1cP1jA"
+access_secret = "r6bNlf1TBHrXQPTmqfGsNdRZ8cBuQrvhrReH0y2UQXnMn"
 
 
 def getConecctionNeo():
