@@ -32,7 +32,7 @@ REGIONES = {'2': 'Antofagasta',
             '13': 'RM Santiago'
             }
 
-BDJSON = "../../twitter-users/"
+BD_JSON = "../../twitter-users/"
 users = defaultdict(lambda: {'followers': 0})
 MIN_TWEETS = 3000
 # Twitter API credentials
@@ -42,7 +42,7 @@ access_key = "2559575756-w3KfDnUaF7bRb1zYn5JTh3T5tCBSoMSjwNuwgyc"
 access_secret = "Vm2CDzis95HozKUWX2hWbzpgAWoKEVcgtoOm7RjSOtx7E"
 
 
-def get_conecction_neo():
+def get_connection_neo():
     gdb = GraphDatabase("http://neo4j:123456@localhost:7474/db/data/")
     return gdb
 
@@ -69,14 +69,14 @@ def count_word_tweet(tw):
 
 def insert_tweets(connection, tweet, id_user, id_region):
     try:
-        dato = count_word_tweet(tweet)
+        data = count_word_tweet(tweet)
         x = connection.cursor()
         x.execute('INSERT INTO Tweet VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ', (
             tweet.id_str, tweet.created_at, tweet.text.encode("utf-8"),
             1 if tweet.favorited is True else 0,
             tweet.favorite_count, 1 if tweet.truncated is True else 0, id_user, tweet.retweet_count,
             1 if tweet.retweeted is True else 0, id_region,
-            dato['gato'], dato['aroa'], dato['RT'], dato['URL']))
+            data['gato'], data['aroa'], data['RT'], data['URL']))
         connection.commit()
     except MySQLdb.DatabaseError, e:
         print 'Error %s' % e
@@ -128,7 +128,6 @@ def get_all_tweets(id_user, region):
 
     # initialize a list to hold all the tweepy Tweets
     alltweets = []
-    conn = get_connection()
     since_id = get_since_id(conn, id_user)
     while True:
         try:
@@ -264,7 +263,7 @@ def clean_tweet(text):
 
 
 def get_user_by_region(region=''):
-    gdb = get_conecction_neo()
+    gdb = get_connection_neo()
     query = "MATCH (n:Chile) WHERE n.region={r} RETURN n.id limit 400"
     param = {'r': region}
     results = gdb.query(query, params=param, data_contents=True)

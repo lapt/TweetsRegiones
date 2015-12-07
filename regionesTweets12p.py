@@ -128,7 +128,7 @@ def get_all_tweets(id_user, region):
 
     # initialize a list to hold all the tweepy Tweets
     alltweets = []
-    conn = getConnection()
+
     sinceId = getSinceId(conn, id_user)
     while True:
         try:

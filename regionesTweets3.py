@@ -42,7 +42,7 @@ access_key = "2559575756-nwdI9DJWb23iMxtjx1mUTKwdv5FTEl8DUwI1yFS"
 access_secret = "1oVXMnMWIv8AiJP4cL2uZKRyQW9zxUeQ0qqretdNcR182"
 
 
-def getConecctionNeo():
+def get_connection_neo():
     gdb = GraphDatabase("http://neo4j:123456@localhost:7474/db/data/")
     return gdb
 
@@ -264,7 +264,7 @@ def cleanTweet(text):
 
 
 def getUserByRegion(region=''):
-    gdb = getConecctionNeo()
+    gdb = get_connection_neo()
     query = "MATCH (n:Chile) WHERE n.region={r} RETURN n.id limit 400"
     param = {'r': region}
     results = gdb.query(query, params=param, data_contents=True)
