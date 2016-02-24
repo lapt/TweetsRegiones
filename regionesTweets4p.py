@@ -100,7 +100,7 @@ def execute(connection, q_script):
         return -1
 
 
-def get_all_tweets(conn, id_user):
+def get_all_tweets(conn, id_user, count):
     if count_tweets(conn, id_user) > MIN_TWEETS:
         return False
     # Twitter only allows access to a users most recent 3240 tweets with this method
@@ -148,7 +148,7 @@ def get_all_tweets(conn, id_user):
     since_id = get_since_id(conn, id_user)
     # keep grabbing tweets until there are no tweets left to grab
     while len(new_tweets) > 0:
-        print "getting tweets before %s" % oldest
+        print "nro: %d, getting tweets before %s" % (count, oldest)
 
         while True:
             try:
@@ -294,10 +294,11 @@ def main():
         print "Not found Users"
         gdb_sql.close()
         sys.exit(1)
+    count = init
     for user in users[init:]:
-        print 'ID user: %d' % user['id']
-        get_all_tweets(gdb_sql, user['id'])
-
+        print 'Nro: %d, ID user: %d' % (count, user['id'])
+        get_all_tweets(gdb_sql, user['id'], count)
+        count += 1
     gdb_sql.close()
 
 
