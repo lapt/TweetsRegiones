@@ -175,9 +175,11 @@ def get_all_tweets(conn, id_user, count):
         oldest = all_tweets[-1].id - 1
 
         print "...%s tweets downloaded so far" % (len(all_tweets))
-
+    count_tweet = 0
     for tweet in all_tweets:
         insert_tweets(conn, tweet, id_user)
+        count_tweet += 1
+        print "nro: %d, Insert: %d" % (count, count_tweet)
     return True
 
 
