@@ -36,10 +36,27 @@ BD_JSON = "../../twitter-users/"
 
 MIN_TWEETS = 3000
 # Twitter API credentials
-consumer_key = "r7ZeHCxlFMWEz5r41Fvfr725d"
-consumer_secret = "EkxgeVdnSqn4A90rbc2oypitixb1wBh0DX1fuP7F8Q8gtRjovV"
-access_key = "2559575756-w3KfDnUaF7bRb1zYn5JTh3T5tCBSoMSjwNuwgyc"
-access_secret = "Vm2CDzis95HozKUWX2hWbzpgAWoKEVcgtoOm7RjSOtx7E"
+KEYS = [['CdLbvHLjTAeaHnKoWhTqtV6US', 'fpPcGAma22pnXMGRsNLSoKCF8oKPl7R5SlncbTQqVuuNVQtJNb',
+         '126471512-ZHy14Tz4xWhFaNXoTOZDUBQ5D6NzyFc52ip9V0cB', 'Zfis0GQbcitJI27MFrCe8Uqascqt2tD3AJC0wKIUSUgzv'],
+        ['gCrcxyVA0AQUkzlF32J4OoKy9', 'TLl3fJyWL1ULSGPFYfhh9x8qIunKDbfLB1mqoacQJ6A8g6cFSS',
+         '126471512-yrwSJN9QVPGafAI4s7Adfu5cKpA5AAnLz4zIWUAx', 'foa09dwa6AXTC0IIzgOslL2UYfEVPd6Px0iDUfr9HkJTn'],
+        ['jnAIepWNKh8TPSa1p3Y4Oc9Hw', 'uWRxIpWHpwOBq609dahJArZbuuMZDTOmCx5KBRUha2bZ639JWz',
+         '126471512-iqRBBX86EwWre7E83mhBEVuKwoAZA2dHCqM3WR9b', '0wB899RxEA0nbDhhmphYFyBqosqYrqTV066rQPUXLKnTL']]
+ID_KEY = 0
+ID_BAD = 0
+auth = tweepy.OAuthHandler(KEYS[ID_KEY][0], KEYS[ID_KEY][1])
+auth.set_access_token(KEYS[ID_KEY][2], KEYS[ID_KEY][3])
+api = tweepy.API(auth)
+
+
+def get_new_api():
+    global ID_KEY
+    ID_KEY = 0 if ID_KEY >= 4 else ID_KEY + 1
+    global auth
+    auth = tweepy.OAuthHandler(KEYS[ID_KEY][0], KEYS[ID_KEY][1])
+    auth.set_access_token(KEYS[ID_KEY][2], KEYS[ID_KEY][3])
+    global api
+    api = tweepy.API(auth)
 
 
 def get_connection():
@@ -103,12 +120,6 @@ def execute(connection, q_script):
 def get_all_tweets(conn, id_user, count):
     if count_tweets(conn, id_user) > MIN_TWEETS:
         return False
-    # Twitter only allows access to a users most recent 3240 tweets with this method
-
-    # authorize twitter, initialize tweepy
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_key, access_secret)
-    api = tweepy.API(auth)
 
     # initialize a list to hold all the tweepy Tweets
     all_tweets = []
@@ -123,17 +134,17 @@ def get_all_tweets(conn, id_user, count):
         except tweepy.TweepError, e:
             if str(e.message) == 'Not authorized.':
                 print "Not authorized id: " + str(id_user)
-                return False
+                return []
             if e.message[0]['code'] == 34:
                 print "Not found ApiTwitter id: " + str(id_user)
-                return False
+                return []
             if e.message[0]['code'] == 63:
                 print 'Usuario suspendido:' + str(id_user)
-                return False
+                return []
             else:
                 # hit rate limit, sleep for 15 minutes
                 print 'Rate limited. Dormir durante 15 minutos. ' + e.reason
-                time.sleep(15 * 60 + 15)
+                get_new_api()
                 continue
         except StopIteration:
             return False
@@ -168,7 +179,7 @@ def get_all_tweets(conn, id_user, count):
                 else:
                     # hit rate limit, sleep for 15 minutes
                     print 'Rate limited. Dormir durante 15 minutos. ' + e.reason
-                    time.sleep(15 * 60 + 15)
+                    get_new_api()
                     continue
             except StopIteration:
                 return None
@@ -180,9 +191,11 @@ def get_all_tweets(conn, id_user, count):
         oldest = all_tweets[-1].id - 1
 
         print "...%s tweets downloaded so far" % (len(all_tweets))
-
+    count_tweet = 0
     for tweet in all_tweets:
         insert_tweets(conn, tweet, id_user)
+        count_tweet += 1
+        print "nro: %d, Insert: %d" % (count, count_tweet)
     return True
 
 
