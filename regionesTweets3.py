@@ -132,18 +132,45 @@ def get_all_tweets(conn, id_user, count):
                 new_tweets = api.user_timeline(user_id=id_user, count=200, since_id=since_id)
             break
         except tweepy.TweepError, e:
-            if str(e.message) == 'Not authorized.':
-                print "Not authorized id: " + str(id_user)
-                return []
+            print "Primero: " + e.reason + " Termina."
+            if e.reason == 'Failed to send request: (\'Connection aborted.\', ' \
+                           'gaierror(-2, \'Name or service not known\'))':
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                time.sleep(60)
+                continue
+            if e.reason == "Failed to send request: ('Connection aborted.', gaierror(-3, " \
+                           "'Temporary failure in name resolution'))":
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                time.sleep(60)
+                continue
+            if e.reason == 'Failed to send request: HTTPSConnectionPool(host=\'api.twitter.com\', port=443): ' \
+                           'Read timed out. (read timeout=60)':
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                time.sleep(60)
+                continue
+            if e.reason == "Failed to send request: ('Connection aborted.', BadStatusLine(\"''\",))":
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                time.sleep(60)
+                continue
+            if e.reason[:29] == "Failed to parse JSON payload:":
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                time.sleep(15)
+                continue
+            if e.reason == 'Not authorized.':
+                print 'Internet. Dormir durante 1 minuto. ' + e.message
+                return
             if e.message[0]['code'] == 34:
                 print "Not found ApiTwitter id: " + str(id_user)
-                return []
+                return
             if e.message[0]['code'] == 63:
                 print 'Usuario suspendido:' + str(id_user)
-                return []
+                return
+            if e.message[0]['code'] == 50:
+                print 'User not found:' + str(id_user)
+                return
             else:
                 # hit rate limit, sleep for 15 minutes
-                print 'Rate limited. Dormir durante 15 minutos. ' + e.reason
+                print 'Rate limited. Dormir durante 15 minutos. code: ' + ' id: ' + str(id_user)
                 get_new_api()
                 continue
         except StopIteration:
@@ -156,29 +183,58 @@ def get_all_tweets(conn, id_user, count):
 
     # save the id of the oldest tweet less one
     oldest = all_tweets[-1].id - 1
-    since_id = get_since_id(conn, id_user)
+
     # keep grabbing tweets until there are no tweets left to grab
     while len(new_tweets) > 0:
         print "nro: %d, getting tweets before %s" % (count, oldest)
 
         while True:
             try:
-                # all subsiquent requests use the max_id param to prevent duplicates
-                new_tweets = api.user_timeline(user_id=id_user, count=200, max_id=oldest, since_id=since_id)
+                if since_id is None:
+                    new_tweets = api.user_timeline(user_id=id_user, count=200, max_id=oldest)
+                else:
+                    new_tweets = api.user_timeline(user_id=id_user, count=200, max_id=oldest, since_id=since_id)
                 break
             except tweepy.TweepError, e:
-                if str(e.message) == 'Not authorized.':
-                    print "Not authorized id: " + str(id_user)
-                    return False
+                print "Primero: " + e.reason + " Termina."
+                if e.reason == 'Failed to send request: (\'Connection aborted.\', ' \
+                               'gaierror(-2, \'Name or service not known\'))':
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    time.sleep(60)
+                    continue
+                if e.reason == "Failed to send request: ('Connection aborted.', gaierror(-3, " \
+                               "'Temporary failure in name resolution'))":
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    time.sleep(60)
+                    continue
+                if e.reason == 'Failed to send request: HTTPSConnectionPool(host=\'api.twitter.com\', port=443): ' \
+                               'Read timed out. (read timeout=60)':
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    time.sleep(60)
+                    continue
+                if e.reason == "Failed to send request: ('Connection aborted.', BadStatusLine(\"''\",))":
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    time.sleep(60)
+                    continue
+                if e.reason[:29] == "Failed to parse JSON payload:":
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    time.sleep(15)
+                    continue
+                if e.reason == 'Not authorized.':
+                    print 'Internet. Dormir durante 1 minuto. ' + e.message
+                    return
                 if e.message[0]['code'] == 34:
                     print "Not found ApiTwitter id: " + str(id_user)
-                    return False
+                    return
                 if e.message[0]['code'] == 63:
                     print 'Usuario suspendido:' + str(id_user)
-                    return False
+                    return
+                if e.message[0]['code'] == 50:
+                    print 'User not found:' + str(id_user)
+                    return
                 else:
                     # hit rate limit, sleep for 15 minutes
-                    print 'Rate limited. Dormir durante 15 minutos. ' + e.reason
+                    print 'Rate limited. Dormir durante 15 minutos. code: ' + ' id: ' + str(id_user)
                     get_new_api()
                     continue
             except StopIteration:
